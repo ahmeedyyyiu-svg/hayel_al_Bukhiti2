@@ -2,33 +2,27 @@ name: Build Android APK
 on:
   push:
     branches: [ "main" ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # سنثبته على 20 لضمان التوافق
-
-      - name: Install and Sync
-        run: |
-          npm install
-          npx cap sync
-        # إضافة هذه السطور لضمان عدم توقف البناء في حال وجود تحذيرات Node
-        continue-on-error: false
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Build APK
+      - name: Get Dependencies
         run: |
           flutter pub get
-          flutter build apk --release
+          # إذا كان مشروعك يحتاج للمزامنة محلياً، تأكد أن مجلد 'android' 
+          # موجود ومحدث داخل المستودع مسبقاً، هذا يوفر علينا تعقيدات Node.js
+        
+      - name: Build APK
+        run: flutter build apk --release --offline
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
