@@ -13,24 +13,19 @@ jobs:
         with:
           node-version: '18'
 
-      # إضافة خطوة تنظيف للـ npm لتجنب مشاكل التثبيت
-      - name: Clean Install Dependencies
-        run: |
-          npm cache clean --force
-          npm install
+      - name: Install Dependencies
+        run: npm install
 
-      # تشغيل بناء الويب أولاً ثم مزامنة Capacitor
-      - name: Build Web & Sync Capacitor
-        run: |
-          npm run build --if-present
-          npx cap sync
+      # تجاوزنا خطوة build، واستخدمنا npx cap sync فقط
+      - name: Sync Capacitor
+        run: npx cap sync
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Get Dependencies
+      - name: Get Flutter Dependencies
         run: flutter pub get
 
       - name: Build APK
