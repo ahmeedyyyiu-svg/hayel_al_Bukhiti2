@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "uHeVabM46t5a9XsI3ccvx"
+uri = "file://exports/sms-manager-source.zip"
+type = "unspecified"
+title = "كود مشروع راكان البخيتي (محدّث بالاسم الجديد)"
