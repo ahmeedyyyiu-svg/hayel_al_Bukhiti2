@@ -1,0 +1,67 @@
+# يبني ملف APK تلقائيًا في سحابة GitHub Actions (بدون الحاجة لتثبيت
+# Android Studio على جهازك) في كل مرة يتم فيها رفع (push) تعديلات، أو عند
+# تشغيله يدويًا من تبويب Actions.
+#
+# بعد اكتمال التشغيل: افتح تبويب "Actions" في مستودع GitHub، اختر آخر
+# تشغيل ناجح، وستجد ملف APK جاهزًا للتنزيل تحت قسم "Artifacts" باسم
+# sms-manager-debug-apk.
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: تنزيل الكود
+        uses: actions/checkout@v4
+
+      - name: تجهيز Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: تجهيز Java (مطلوب لبناء أندرويد)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: تثبيت حزم npm
+        run: npm install
+
+      - name: إضافة منصة أندرويد عبر Capacitor
+        run: npx cap add android
+
+      - name: توليد أيقونة التطبيق من resources/icon.png
+        run: npx capacitor-assets generate --android
+
+      - name: مزامنة الملفات مع مشروع أندرويد
+        run: npx cap sync android
+
+      - name: تركيب إضافة إرسال SMS الأصلية (SmsSenderPlugin)
+        run: |
+          mkdir -p android/app/src/main/java/com/smsmanager/app
+          cp native-android/SmsSenderPlugin.java android/app/src/main/java/com/smsmanager/app/SmsSenderPlugin.java
+          cp native-android/MainActivity.java android/app/src/main/java/com/smsmanager/app/MainActivity.java
+
+      - name: إضافة إذن إرسال الرسائل (SEND_SMS)
+        run: |
+          sed -i 's#<application#<uses-permission android:name="android.permission.SEND_SMS" />\n    <application#' \
+            android/app/src/main/AndroidManifest.xml
+
+      - name: صلاحية تنفيذ gradlew
+        run: chmod +x android/gradlew
+
+      - name: بناء APK (نسخة Debug للتثبيت اليدوي)
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: رفع ملف APK كمخرج قابل للتنزيل
+        uses: actions/upload-artifact@v4
+        with:
+          name: sms-manager-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
