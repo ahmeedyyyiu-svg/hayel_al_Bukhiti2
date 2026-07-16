@@ -7,22 +7,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install Dependencies & Sync
+
+      # إضافة خطوة تنظيف للـ npm لتجنب مشاكل التثبيت
+      - name: Clean Install Dependencies
         run: |
+          npm cache clean --force
           npm install
+
+      # تشغيل بناء الويب أولاً ثم مزامنة Capacitor
+      - name: Build Web & Sync Capacitor
+        run: |
+          npm run build --if-present
           npx cap sync
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+
       - name: Get Dependencies
         run: flutter pub get
+
       - name: Build APK
         run: flutter build apk --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
