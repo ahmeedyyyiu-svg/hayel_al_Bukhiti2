@@ -1,0 +1,2 @@
+- [better-sqlite3 fails to install](native-npm-build-deps.md) — no Python/node-gyp toolchain in this env; native npm packages needing compilation fail, use pure-JS alternatives.
+- [Capacitor offline app architecture](capacitor-offline-architecture.md) — move server-side logic to client (localStorage) before packaging with Capacitor; no Node server runs on-device.
