@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>𝔽𝕒𝕕𝕝 SMS</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2f4bff" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="app-title-row">
+        <span class="app-logo" title="تصميم أبو هايل البخيتي" aria-label="تصميم أبو هايل البخيتي">
+          <svg viewBox="0 0 64 64" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f6e27a" />
+                <stop offset="50%" stop-color="#d4af37" />
+                <stop offset="100%" stop-color="#9c7a1e" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M32 6C16.5 6 4 16.5 4 29.5c0 7 3.7 13.3 9.6 17.6-.3 3-1.6 6.7-4.2 10 4.6-.6 9-2.5 12.6-5.3 3.1 1 6.5 1.7 10 1.7 15.5 0 28-10.5 28-23.5S47.5 6 32 6Z"
+              fill="url(#goldGradient)"
+            />
+            <circle cx="20" cy="29.5" r="3.4" fill="#3a2c05" />
+            <circle cx="32" cy="29.5" r="3.4" fill="#3a2c05" />
+            <circle cx="44" cy="29.5" r="3.4" fill="#3a2c05" />
+          </svg>
+        </span>
+        <h1>𝔽𝕒𝕕𝕝 SMS</h1>
+      </div>
+      <p class="design-credit">تصميم أبو هايل البخيتي</p>
+      <p class="subtitle-app">تطبيق رسائل جماعية</p>
+      <p class="subtitle">أضف جهات الاتصال يدويًا أو استوردها من ملف CSV</p>
+    </header>
+
+    <main class="app-main">
+      <section class="card">
+        <h2>إرسال رسائل جماعي</h2>
+        <p class="hint">
+          سيتم إرسال الرسالة إلى جهات الاتصال المحدّدة أسفل هذه البطاقة، رسالة
+          واحدة كل ٣ ثوانٍ بالترتيب.
+        </p>
+        <div class="field">
+          <label for="bulk-message">نص الرسالة</label>
+          <textarea id="bulk-message" rows="3" placeholder="اكتب نص الرسالة هنا..."></textarea>
+        </div>
+        <div class="send-actions">
+          <button id="send-bulk-btn" class="btn btn-primary send-bulk-btn">بدء الإرسال المتتابع</button>
+          <button id="cancel-send-btn" class="btn btn-danger cancel-send-btn" hidden>إلغاء الإرسال</button>
+        </div>
+        <p id="send-summary" class="message" role="status"></p>
+        <ul id="send-status-list" class="send-status-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>الفئات</h2>
+        <p class="hint">
+          نظّم جهات الاتصال ضمن فئات (مثل: العائلة، الصحة، التربية،
+          العاملين)، أو أضف فئات خاصة بك بأي اسم تريده.
+        </p>
+        <form id="add-category-form" class="form-row">
+          <div class="field">
+            <label for="category-name">اسم الفئة الجديدة</label>
+            <input id="category-name" name="categoryName" type="text" placeholder="مثال: أصدقاء" required />
+          </div>
+          <button type="submit" class="btn btn-secondary">إضافة فئة</button>
+        </form>
+        <p id="category-message" class="message" role="status"></p>
+        <ul id="categories-list" class="categories-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>إضافة جهة اتصال جديدة</h2>
+        <form id="add-contact-form" class="form-row">
+          <div class="field">
+            <label for="name">الاسم</label>
+            <input id="name" name="name" type="text" placeholder="مثال: خالد أحمد" required />
+          </div>
+          <div class="field">
+            <label for="phone">رقم الهاتف</label>
+            <input id="phone" name="phone" type="tel" placeholder="مثال: 0555555555" required />
+          </div>
+          <div class="field">
+            <label for="contact-category">الفئة</label>
+            <select id="contact-category" name="categoryId">
+              <option value="">بلا فئة</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">حفظ</button>
+        </form>
+        <p id="add-contact-message" class="message" role="status"></p>
+      </section>
+
+      <section class="card">
+        <h2>استيراد من ملف CSV</h2>
+        <p class="hint">
+          الأعمدة المدعومة: <code>name</code> أو <code>الاسم</code> و
+          <code>phone</code> أو <code>رقم الهاتف</code>. بدون صف عناوين؟ سنفترض
+          أن العمود الأول هو الاسم والثاني هو رقم الهاتف. اختر الفئة التي
+          تريد استيراد جميع الأرقام إليها.
+        </p>
+        <form id="import-form" class="form-row">
+          <div class="field field-file">
+            <span class="field-file-title">ملف CSV</span>
+            <div class="file-picker">
+              <label for="csv-file" class="file-picker-btn">اختر ملفًا</label>
+              <span id="csv-file-name" class="file-picker-name">لم يتم اختيار ملف</span>
+              <input id="csv-file" name="file" type="file" accept=".csv,text/csv" class="file-input-hidden" required />
+            </div>
+            <button type="button" id="pick-contacts-btn" class="file-picker-btn file-picker-btn-alt">
+              اختيار من جهات الاتصال
+            </button>
+            <p id="pick-contacts-message" class="message" role="status"></p>
+          </div>
+          <div class="field">
+            <label for="import-category">الفئة</label>
+            <select id="import-category" name="categoryId">
+              <option value="">بلا فئة</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-secondary">استيراد</button>
+        </form>
+        <p id="import-message" class="message" role="status"></p>
+      </section>
+
+      <section class="card">
+        <div class="card-header-row">
+          <h2>الأرقام المضافة</h2>
+          <span id="contacts-count" class="badge">0</span>
+        </div>
+        <div id="category-tabs" class="category-tabs"></div>
+        <div class="select-all-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="select-all" />
+            تحديد الكل
+          </label>
+          <button type="button" id="delete-all-btn" class="btn btn-danger">حذف الكل</button>
+        </div>
+        <div id="contacts-empty" class="empty-state">لا توجد جهات اتصال بعد.</div>
+        <ul id="contacts-list" class="contacts-list"></ul>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        ملاحظة: جميع البيانات مخزّنة محليًا على هذا الجهاز فقط (بدون إنترنت).
+        الإرسال الفعلي للرسائل يعمل فقط داخل تطبيق أندرويد المُعبّأ بعد تركيب
+        إضافة SMS أصلية؛ داخل المتصفح ستظهر كل رسالة كـ"فشل: غير متصل".
+      </p>
+    </footer>
+  </div>
+
+  <script src="/storage.js"></script>
+  <script src="/csvParser.js"></script>
+  <script src="/smsBridge.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
