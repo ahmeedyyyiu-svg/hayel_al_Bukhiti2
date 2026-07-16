@@ -11,25 +11,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20' # سنثبته على 20 لضمان التوافق
 
-      - name: Install Dependencies
-        run: npm install
-
-      # تجاوزنا خطوة build، واستخدمنا npx cap sync فقط
-      - name: Sync Capacitor
-        run: npx cap sync
+      - name: Install and Sync
+        run: |
+          npm install
+          npx cap sync
+        # إضافة هذه السطور لضمان عدم توقف البناء في حال وجود تحذيرات Node
+        continue-on-error: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Get Flutter Dependencies
-        run: flutter pub get
-
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          flutter pub get
+          flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
