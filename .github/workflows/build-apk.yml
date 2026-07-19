@@ -1,4 +1,5 @@
-name: Build Android APK
+name: Build APK
+
 on:
   push:
     branches: [ "main" ]
@@ -7,41 +8,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Cache pub & Gradle
-        uses: actions/cache@v4
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v4
         with:
-          path: |
-            ~/.pub-cache
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-pub-gradle-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-gradle-
-
-      - name: Flutter version
-        run: |
-          flutter --version
-          flutter build apk -h
-
-      - name: Get Dependencies
-        run: |
-          flutter pub get
-          # إذا كان مشروعك يحتاج للمزامنة محلياً، تأكد أن مجلد 'android'
-          # موجود ومحدث داخل المستودع مسبقاً، هذا يوفر علينا تعقيدات Node.js
-
-      - name: Build APK
-        run: flutter build apk --release
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
